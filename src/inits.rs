@@ -13,8 +13,6 @@ impl Ray {
     pub fn new(degree: i32) -> Ray {
         let direction = vec2(deg_to_rad(degree).cos(), deg_to_rad(degree).sin());
 
-        info!("{}", direction);
-
         Ray {
             pos: vec2(0.0, 0.0),
             end: vec2(direction.x * RAY_LENGTH, direction.y * RAY_LENGTH),

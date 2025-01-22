@@ -23,7 +23,7 @@ async fn main() {
     loop {
         let (mouse_xpos, mouse_ypos) = mouse_position();
 
-        if is_key_pressed(KeyCode::A) {
+        if is_key_pressed(KeyCode::Space) {
             for wall in walls.iter_mut() {
                 *wall = Wall::new();
             }
