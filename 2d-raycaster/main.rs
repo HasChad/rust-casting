@@ -6,43 +6,18 @@ mod inits;
 use app_settings::*;
 use inits::*;
 
-const FOV: i32 = 120;
-const RAY_COUNT: i32 = 40;
-const COLUMN_SIZE: i32 = WIDHT / RAY_COUNT;
-
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut rays: Vec<Ray> = vec![];
-    let mut walls: Vec<Wall> = vec![
-        Wall {
-            a: vec2(100., 100.),
-            b: vec2(100., 300.),
-        },
-        Wall {
-            a: vec2(100., 300.),
-            b: vec2(300., 300.),
-        },
-        Wall {
-            a: vec2(300., 300.),
-            b: vec2(300., 100.),
-        },
-        Wall {
-            a: vec2(300., 100.),
-            b: vec2(100., 100.),
-        },
-        Wall {
-            a: vec2(300., 100.),
-            b: vec2(100., 300.),
-        },
-    ];
+    let mut walls: Vec<Wall> = vec![];
 
-    for degree in (0..360).step_by(360) {
+    for degree in (0..360).step_by(3) {
         rays.push(Ray::new(degree));
     }
 
-    // for _ in 0..5 {
-    //     walls.push(Wall::new());
-    // }
+    for _ in 0..5 {
+        walls.push(Wall::new());
+    }
 
     // ! Game Loop
     loop {

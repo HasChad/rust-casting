@@ -34,7 +34,7 @@ impl Ray {
     pub fn check_wall(&mut self, walls: &[Wall]) {
         // https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
 
-        let mut min_distance = RAY_LENGTH;
+        let mut min_distance = f32::INFINITY;
         let mut point = Vec2::ZERO;
 
         for wall in walls.iter() {
@@ -45,8 +45,8 @@ impl Ray {
 
             let x3 = self.pos.x;
             let y3 = self.pos.y;
-            let x4 = self.pos.x + self.end.x;
-            let y4 = self.pos.y + self.end.y;
+            let x4 = self.pos.x + self.dir.x;
+            let y4 = self.pos.y + self.dir.y;
 
             let den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
             if den == 0.0 {
@@ -55,12 +55,6 @@ impl Ray {
 
             let t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
             let u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
-
-            info!("{}", u);
-
-            if u > 0.0 {
-                info!("seks");
-            }
 
             if t > 0.0 && t < 1.0 && u > 0.0 {
                 let pt = Vec2 {
