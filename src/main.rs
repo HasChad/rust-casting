@@ -7,58 +7,64 @@ use app_settings::*;
 use inits::*;
 
 const FOV: i32 = 120;
-const RAY_COUNT: i32 = 40;
+const RAY_COUNT: i32 = FOV / 40; // fov / real ray count
 const COLUMN_SIZE: i32 = WIDHT / RAY_COUNT;
+
+struct Player {
+    degree: f32,
+    pos: Vec2,
+    rays: Vec<Ray>,
+}
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    let mut rays: Vec<Ray> = vec![];
-    let mut walls: Vec<Wall> = vec![
+    let mut player = Player {
+        degree: 0.0,
+        pos: vec2(250.0, 250.0),
+        rays: vec![],
+    };
+    let walls: Vec<Wall> = vec![
         Wall {
-            a: vec2(100., 100.),
-            b: vec2(100., 300.),
+            a: vec2(200., 200.),
+            b: vec2(200., 400.),
         },
         Wall {
-            a: vec2(100., 300.),
-            b: vec2(300., 300.),
+            a: vec2(400., 400.),
+            b: vec2(400., 200.),
         },
         Wall {
-            a: vec2(300., 300.),
-            b: vec2(300., 100.),
+            a: vec2(200., 400.),
+            b: vec2(400., 400.),
         },
         Wall {
-            a: vec2(300., 100.),
-            b: vec2(100., 100.),
-        },
-        Wall {
-            a: vec2(300., 100.),
-            b: vec2(100., 300.),
+            a: vec2(400., 200.),
+            b: vec2(200., 200.),
         },
     ];
 
-    for degree in (0..360).step_by(360) {
-        rays.push(Ray::new(degree));
+    for degree in -20..20 {
+        player.rays.push(Ray::new(degree as f32 * 3.0, player.pos));
     }
-
-    // for _ in 0..5 {
-    //     walls.push(Wall::new());
-    // }
 
     // ! Game Loop
     loop {
-        let (mouse_xpos, mouse_ypos) = mouse_position();
+        player.rays = vec![];
+        for degree in (player.degree as i32 - 20)..(player.degree as i32 + 20) {
+            player.rays.push(Ray::new(degree as f32 * 3.0, player.pos));
+        }
 
-        if is_key_pressed(KeyCode::Space) {
-            for wall in walls.iter_mut() {
-                *wall = Wall::new();
-            }
+        if is_key_down(KeyCode::Left) {
+            player.degree -= 50.0 * get_frame_time();
+        }
+
+        if is_key_down(KeyCode::Right) {
+            player.degree += 50.0 * get_frame_time();
         }
 
         // ! draw
         clear_background(BLACK);
 
-        for ray in rays.iter_mut() {
-            ray.pos = vec2(mouse_xpos, mouse_ypos);
+        for ray in player.rays.iter_mut() {
             ray.check_wall(&walls);
             ray.draw();
         }
@@ -66,6 +72,8 @@ async fn main() {
         for wall in walls.iter() {
             wall.draw();
         }
+
+        // draw_circle(pos.x, pos.y, 5., RED);
 
         next_frame().await
     }
