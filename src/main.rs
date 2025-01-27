@@ -17,29 +17,14 @@ struct Player {
 }
 
 impl Player {
-    fn fmove_player(&mut self, direction: Vec2) {
-        // ! player looking direction
+    fn fmove_player(&mut self, direction: f32) {
         let forward = Vec2::new(
-            self.degree.to_radians().sin(),
-            self.degree.to_radians().cos(),
-        )
-        .normalize();
-
-        let right = Vec2::new(
             self.degree.to_radians().cos(),
             self.degree.to_radians().sin(),
         )
         .normalize();
 
-        // ! wishvel
-        let wishvel = Vec2::new(
-            forward.y * direction.x + right.y * direction.y,
-            forward.x * direction.x + right.x * direction.y,
-        );
-
-        let wishdir = wishvel.normalize();
-
-        self.pos += wishdir * get_frame_time() * 200.0;
+        self.pos += forward * direction * get_frame_time() * 200.0;
     }
 
     fn draw(&self) {
@@ -98,34 +83,20 @@ async fn main() {
                 .push(Ray::new(player.degree + degree as f32 * 3.0, player.pos));
         }
 
+        // head rotate
         if is_key_down(KeyCode::Left) {
             player.degree -= 100.0 * get_frame_time();
         }
-
         if is_key_down(KeyCode::Right) {
             player.degree += 100.0 * get_frame_time();
         }
 
         // player movement
-        if is_key_down(KeyCode::W) {
-            let movement = vec2(1.0, 0.0);
-
-            player.fmove_player(movement);
+        if is_key_down(KeyCode::Up) {
+            player.fmove_player(1.0);
         }
-        if is_key_down(KeyCode::S) {
-            let movement = vec2(-1.0, 0.0);
-
-            player.fmove_player(movement);
-        }
-        if is_key_down(KeyCode::A) {
-            let movement = vec2(0.0, -1.0);
-
-            player.fmove_player(movement);
-        }
-        if is_key_down(KeyCode::D) {
-            let movement = vec2(0.0, 1.0);
-
-            player.fmove_player(movement);
+        if is_key_down(KeyCode::Down) {
+            player.fmove_player(-1.0);
         }
 
         // ! draw
