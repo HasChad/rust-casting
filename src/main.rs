@@ -16,6 +16,49 @@ struct Player {
     rays: Vec<Ray>,
 }
 
+impl Player {
+    fn fmove_player(&mut self, direction: Vec2) {
+        // ! player looking direction
+        let forward = Vec2::new(
+            self.degree.to_radians().sin(),
+            self.degree.to_radians().cos(),
+        )
+        .normalize();
+
+        let right = Vec2::new(
+            self.degree.to_radians().cos(),
+            self.degree.to_radians().sin(),
+        )
+        .normalize();
+
+        // ! wishvel
+        let wishvel = Vec2::new(
+            forward.y * direction.x + right.y * direction.y,
+            forward.x * direction.x + right.x * direction.y,
+        );
+
+        let wishdir = wishvel.normalize();
+
+        self.pos += wishdir * get_frame_time() * 200.0;
+    }
+
+    fn draw(&self) {
+        let direction = vec2(
+            self.degree.to_radians().cos(),
+            self.degree.to_radians().sin(),
+        );
+
+        draw_line(
+            self.pos.x,
+            self.pos.y,
+            self.pos.x + direction.x * 100.,
+            self.pos.y + direction.y * 100.,
+            3.0,
+            RED,
+        );
+    }
+}
+
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut player = Player {
@@ -49,16 +92,40 @@ async fn main() {
     // ! Game Loop
     loop {
         player.rays = vec![];
-        for degree in (player.degree as i32 - 20)..(player.degree as i32 + 20) {
-            player.rays.push(Ray::new(degree as f32 * 3.0, player.pos));
+        for degree in -20..20 {
+            player
+                .rays
+                .push(Ray::new(player.degree + degree as f32 * 3.0, player.pos));
         }
 
         if is_key_down(KeyCode::Left) {
-            player.degree -= 50.0 * get_frame_time();
+            player.degree -= 100.0 * get_frame_time();
         }
 
         if is_key_down(KeyCode::Right) {
-            player.degree += 50.0 * get_frame_time();
+            player.degree += 100.0 * get_frame_time();
+        }
+
+        // player movement
+        if is_key_down(KeyCode::W) {
+            let movement = vec2(1.0, 0.0);
+
+            player.fmove_player(movement);
+        }
+        if is_key_down(KeyCode::S) {
+            let movement = vec2(-1.0, 0.0);
+
+            player.fmove_player(movement);
+        }
+        if is_key_down(KeyCode::A) {
+            let movement = vec2(0.0, -1.0);
+
+            player.fmove_player(movement);
+        }
+        if is_key_down(KeyCode::D) {
+            let movement = vec2(0.0, 1.0);
+
+            player.fmove_player(movement);
         }
 
         // ! draw
@@ -72,6 +139,8 @@ async fn main() {
         for wall in walls.iter() {
             wall.draw();
         }
+
+        player.draw();
 
         // draw_circle(pos.x, pos.y, 5., RED);
 

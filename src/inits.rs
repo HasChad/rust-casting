@@ -22,16 +22,6 @@ impl Ray {
         }
     }
 
-    pub fn head_move(&mut self, player_degree: f32) {
-        self.degree += player_degree;
-
-        self.dir = vec2(
-            self.degree.to_radians().cos(),
-            self.degree.to_radians().sin(),
-        );
-        self.end = vec2(self.dir.x * RAY_LENGTH, self.dir.y * RAY_LENGTH);
-    }
-
     pub fn draw(&self) {
         draw_line(
             self.pos.x,
