@@ -1,10 +1,8 @@
-use ::rand::{thread_rng, Rng};
 use macroquad::prelude::*;
 
 const RAY_LENGTH: f32 = 1000.0;
 
 pub struct Ray {
-    pub degree: f32,
     pub pos: Vec2,
     pub end: Vec2,
     pub dir: Vec2,
@@ -15,7 +13,6 @@ impl Ray {
         let direction = vec2(degree.to_radians().cos(), degree.to_radians().sin());
 
         Ray {
-            degree,
             pos,
             end: vec2(direction.x * RAY_LENGTH, direction.y * RAY_LENGTH),
             dir: direction,
@@ -83,12 +80,51 @@ impl Ray {
     }
 }
 
+pub struct Player {
+    pub degree: f32,
+    pub pos: Vec2,
+    pub rays: Vec<Ray>,
+}
+
+impl Player {
+    pub fn fmove_player(&mut self, direction: f32) {
+        let forward = Vec2::new(
+            self.degree.to_radians().cos(),
+            self.degree.to_radians().sin(),
+        )
+        .normalize();
+
+        self.pos += forward * direction * get_frame_time() * 200.0;
+    }
+
+    pub fn draw(&self) {
+        let direction = vec2(
+            self.degree.to_radians().cos(),
+            self.degree.to_radians().sin(),
+        );
+
+        draw_line(
+            self.pos.x,
+            self.pos.y,
+            self.pos.x + direction.x * 100.,
+            self.pos.y + direction.y * 100.,
+            3.0,
+            RED,
+        );
+    }
+}
+
 pub struct Wall {
     pub a: Vec2,
     pub b: Vec2,
 }
 
 impl Wall {
+    pub fn draw(&self) {
+        draw_line(self.a.x, self.a.y, self.b.x, self.b.y, 1.0, YELLOW);
+    }
+
+    /*
     pub fn new() -> Wall {
         let mut rng = thread_rng();
 
@@ -103,8 +139,5 @@ impl Wall {
             },
         }
     }
-
-    pub fn draw(&self) {
-        draw_line(self.a.x, self.a.y, self.b.x, self.b.y, 1.0, YELLOW);
-    }
+    */
 }

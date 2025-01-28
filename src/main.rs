@@ -10,40 +10,6 @@ const FOV: i32 = 120;
 const RAY_COUNT: i32 = FOV / 40; // fov / real ray count
 const COLUMN_SIZE: i32 = WIDHT / RAY_COUNT;
 
-struct Player {
-    degree: f32,
-    pos: Vec2,
-    rays: Vec<Ray>,
-}
-
-impl Player {
-    fn fmove_player(&mut self, direction: f32) {
-        let forward = Vec2::new(
-            self.degree.to_radians().cos(),
-            self.degree.to_radians().sin(),
-        )
-        .normalize();
-
-        self.pos += forward * direction * get_frame_time() * 200.0;
-    }
-
-    fn draw(&self) {
-        let direction = vec2(
-            self.degree.to_radians().cos(),
-            self.degree.to_radians().sin(),
-        );
-
-        draw_line(
-            self.pos.x,
-            self.pos.y,
-            self.pos.x + direction.x * 100.,
-            self.pos.y + direction.y * 100.,
-            3.0,
-            RED,
-        );
-    }
-}
-
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut player = Player {
