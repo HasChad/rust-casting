@@ -1,5 +1,7 @@
 use macroquad::prelude::*;
 
+use crate::RAY_COUNT;
+
 const RAY_LENGTH: f32 = 1000.0;
 
 pub struct Ray {
@@ -30,28 +32,36 @@ impl Ray {
         );
     }
 
-    pub fn draw_column(&self, line: usize) {
+    pub fn draw_column(&self, line_count: usize) {
+        let column_width = screen_width() / RAY_COUNT as f32;
+
         let x1 = self.pos.x;
         let y1 = self.pos.y;
         let x2 = self.pos.x + self.end.x;
         let y2 = self.pos.y + self.end.y;
 
-        let distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt();
-        let column_size = (600.0 - distance);
+        let angle = ((y2 - y1) / (x2 - x1)).atan();
 
-        if column_size > 0. {
+        let real_distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt() * angle.cos();
+
+        info!("{}", real_distance * angle.cos());
+
+        let distance = (RAY_LENGTH - real_distance) / RAY_LENGTH;
+        let column_height = distance * screen_height();
+
+        if column_height > 0. {
             let color = Color::from_rgba(
-                (column_size / 600.0 * 255.0) as u8,
-                (column_size / 600.0 * 255.0) as u8,
-                (column_size / 600.0 * 255.0) as u8,
+                (distance * 255.0) as u8,
+                (distance * 255.0) as u8,
+                (distance * 255.0) as u8,
                 255,
             );
 
             draw_rectangle(
-                line as f32 * 16.0,
-                240. - column_size / 2.,
-                16.0,
-                column_size,
+                line_count as f32 * column_width,
+                240. - column_height / 2.,
+                column_width,
+                column_height,
                 color,
             );
         }

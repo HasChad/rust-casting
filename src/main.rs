@@ -6,9 +6,8 @@ mod inits;
 use app_settings::*;
 use inits::*;
 
-const FOV: i32 = 120;
-const RAY_COUNT: i32 = FOV / 40; // fov / real ray count
-const COLUMN_SIZE: i32 = WIDHT / RAY_COUNT;
+const RAY_COUNT: i32 = 120;
+const FOV: f32 = 80.0 / RAY_COUNT as f32;
 
 #[macroquad::main(window_conf)]
 async fn main() {
@@ -36,53 +35,51 @@ async fn main() {
         },
     ];
 
-    for degree in -60..60 {
-        player.rays.push(Ray::new(degree as f32 * 2.0, player.pos));
+    for degree in (RAY_COUNT / -2)..(RAY_COUNT / 2) {
+        player.rays.push(Ray::new(degree as f32 * FOV, player.pos));
     }
 
     // ! Game Loop
     loop {
         player.rays = vec![];
-        for degree in -20..20 {
+        for degree in (RAY_COUNT / -2)..(RAY_COUNT / 2) {
             player
                 .rays
-                .push(Ray::new(player.degree + degree as f32 * 2.0, player.pos));
+                .push(Ray::new(player.degree + degree as f32 * FOV, player.pos));
         }
 
         // head rotate
-        if is_key_down(KeyCode::Left) {
+        if is_key_down(KeyCode::Left) || is_key_down(KeyCode::A) {
             player.degree -= 100.0 * get_frame_time();
         }
-        if is_key_down(KeyCode::Right) {
+        if is_key_down(KeyCode::Right) || is_key_down(KeyCode::D) {
             player.degree += 100.0 * get_frame_time();
         }
 
         // player movement
-        if is_key_down(KeyCode::Up) {
+        if is_key_down(KeyCode::Up) || is_key_down(KeyCode::W) {
             player.fmove_player(1.0);
         }
-        if is_key_down(KeyCode::Down) {
+        if is_key_down(KeyCode::Down) || is_key_down(KeyCode::S) {
             player.fmove_player(-1.0);
         }
 
         // ! draw
         clear_background(BLACK);
 
-        /*
-        draw_rectangle(0.0, 0., screen_width(), screen_height() / 2.0, PINK);
+        draw_rectangle(0.0, 0., screen_width(), screen_height() / 2.0, DARKBLUE);
         draw_rectangle(
             0.0,
             screen_height() / 2.0,
             screen_width(),
             screen_height() / 2.0,
-            ORANGE,
+            DARKGREEN,
         );
-        */
 
         for (num, ray) in player.rays.iter_mut().enumerate() {
             ray.check_wall(&walls);
             ray.draw();
-            //ray.draw_column(num);
+            ray.draw_column(num);
         }
 
         for wall in walls.iter() {
@@ -90,8 +87,6 @@ async fn main() {
         }
 
         player.draw();
-
-        // draw_circle(pos.x, pos.y, 5., RED);
 
         next_frame().await
     }
