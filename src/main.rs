@@ -36,8 +36,8 @@ async fn main() {
         },
     ];
 
-    for degree in -20..20 {
-        player.rays.push(Ray::new(degree as f32 * 3.0, player.pos));
+    for degree in -60..60 {
+        player.rays.push(Ray::new(degree as f32 * 2.0, player.pos));
     }
 
     // ! Game Loop
@@ -46,7 +46,7 @@ async fn main() {
         for degree in -20..20 {
             player
                 .rays
-                .push(Ray::new(player.degree + degree as f32 * 3.0, player.pos));
+                .push(Ray::new(player.degree + degree as f32 * 2.0, player.pos));
         }
 
         // head rotate
@@ -68,9 +68,21 @@ async fn main() {
         // ! draw
         clear_background(BLACK);
 
-        for ray in player.rays.iter_mut() {
+        /*
+        draw_rectangle(0.0, 0., screen_width(), screen_height() / 2.0, PINK);
+        draw_rectangle(
+            0.0,
+            screen_height() / 2.0,
+            screen_width(),
+            screen_height() / 2.0,
+            ORANGE,
+        );
+        */
+
+        for (num, ray) in player.rays.iter_mut().enumerate() {
             ray.check_wall(&walls);
             ray.draw();
+            //ray.draw_column(num);
         }
 
         for wall in walls.iter() {

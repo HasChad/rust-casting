@@ -30,6 +30,33 @@ impl Ray {
         );
     }
 
+    pub fn draw_column(&self, line: usize) {
+        let x1 = self.pos.x;
+        let y1 = self.pos.y;
+        let x2 = self.pos.x + self.end.x;
+        let y2 = self.pos.y + self.end.y;
+
+        let distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt();
+        let column_size = (600.0 - distance);
+
+        if column_size > 0. {
+            let color = Color::from_rgba(
+                (column_size / 600.0 * 255.0) as u8,
+                (column_size / 600.0 * 255.0) as u8,
+                (column_size / 600.0 * 255.0) as u8,
+                255,
+            );
+
+            draw_rectangle(
+                line as f32 * 16.0,
+                240. - column_size / 2.,
+                16.0,
+                column_size,
+                color,
+            );
+        }
+    }
+
     pub fn check_wall(&mut self, walls: &[Wall]) {
         // https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
 
