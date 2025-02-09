@@ -9,8 +9,14 @@ use inits::*;
 const RAY_COUNT: i32 = 120;
 const FOV: f32 = 80.0 / RAY_COUNT as f32;
 
+enum GameMode {
+    FirstPerson,
+    MiniMap,
+}
+
 #[macroquad::main(window_conf)]
 async fn main() {
+    let mut game_mode = GameMode::FirstPerson;
     let mut player = Player {
         degree: 0.0,
         pos: vec2(250.0, 250.0),
@@ -71,29 +77,48 @@ async fn main() {
             player.fmove_player(-1.0);
         }
 
-        // ! draw
-        clear_background(BLACK);
+        // gamemode changer
+        if is_key_pressed(KeyCode::Tab) {
+            match game_mode {
+                GameMode::FirstPerson => game_mode = GameMode::MiniMap,
+                GameMode::MiniMap => game_mode = GameMode::FirstPerson,
+            }
+        }
 
-        draw_rectangle(0.0, 0., screen_width(), screen_height() / 2.0, DARKBLUE);
-        draw_rectangle(
-            0.0,
-            screen_height() / 2.0,
-            screen_width(),
-            screen_height() / 2.0,
-            DARKGREEN,
-        );
-
-        for (num, ray) in player.rays.iter_mut().enumerate() {
+        for ray in player.rays.iter_mut() {
             ray.check_wall(&walls);
-            ray.draw();
-            ray.draw_column(num, player.degree);
         }
 
-        for wall in walls.iter() {
-            wall.draw();
-        }
+        // ! draw
+        match game_mode {
+            GameMode::FirstPerson => {
+                draw_rectangle(0.0, 0., screen_width(), screen_height() / 2.0, DARKBLUE);
+                draw_rectangle(
+                    0.0,
+                    screen_height() / 2.0,
+                    screen_width(),
+                    screen_height() / 2.0,
+                    DARKGREEN,
+                );
 
-        player.draw();
+                for (num, ray) in player.rays.iter_mut().enumerate() {
+                    ray.draw_column(num, player.degree);
+                }
+            }
+            GameMode::MiniMap => {
+                clear_background(BLACK);
+
+                for wall in walls.iter() {
+                    wall.draw();
+                }
+
+                for ray in player.rays.iter_mut() {
+                    ray.draw();
+                }
+
+                player.draw();
+            }
+        }
 
         next_frame().await
     }

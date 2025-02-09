@@ -45,7 +45,7 @@ impl Ray {
         let angle = self.degree - player_angle;
         info!("angle = {}", angle);
 
-        let real_distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt(); // * angle.to_radians().cos(); //disable angle.cos()
+        let real_distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt();
         let distance = (RAY_LENGTH - real_distance) / RAY_LENGTH;
         let column_height = distance * screen_height();
 
@@ -160,21 +160,4 @@ impl Wall {
     pub fn draw(&self) {
         draw_line(self.a.x, self.a.y, self.b.x, self.b.y, 1.0, YELLOW);
     }
-
-    /*
-    pub fn new() -> Wall {
-        let mut rng = thread_rng();
-
-        Wall {
-            a: Vec2 {
-                x: rng.gen_range(0.0..screen_width()),
-                y: rng.gen_range(0.0..screen_height()),
-            },
-            b: Vec2 {
-                x: rng.gen_range(0.0..screen_width()),
-                y: rng.gen_range(0.0..screen_height()),
-            },
-        }
-    }
-    */
 }
