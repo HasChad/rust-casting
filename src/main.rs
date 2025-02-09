@@ -56,6 +56,13 @@ async fn main() {
             player.degree += 100.0 * get_frame_time();
         }
 
+        // degree correction
+        if player.degree < -0.0 {
+            player.degree += 360.0;
+        } else if player.degree > 360.0 {
+            player.degree -= 360.0;
+        }
+
         // player movement
         if is_key_down(KeyCode::Up) || is_key_down(KeyCode::W) {
             player.fmove_player(1.0);
@@ -79,7 +86,7 @@ async fn main() {
         for (num, ray) in player.rays.iter_mut().enumerate() {
             ray.check_wall(&walls);
             ray.draw();
-            ray.draw_column(num);
+            ray.draw_column(num, player.degree);
         }
 
         for wall in walls.iter() {

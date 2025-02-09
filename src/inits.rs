@@ -5,6 +5,7 @@ use crate::RAY_COUNT;
 const RAY_LENGTH: f32 = 1000.0;
 
 pub struct Ray {
+    pub degree: f32,
     pub pos: Vec2,
     pub end: Vec2,
     pub dir: Vec2,
@@ -15,6 +16,7 @@ impl Ray {
         let direction = vec2(degree.to_radians().cos(), degree.to_radians().sin());
 
         Ray {
+            degree,
             pos,
             end: vec2(direction.x * RAY_LENGTH, direction.y * RAY_LENGTH),
             dir: direction,
@@ -32,7 +34,7 @@ impl Ray {
         );
     }
 
-    pub fn draw_column(&self, line_count: usize) {
+    pub fn draw_column(&self, line_count: usize, player_angle: f32) {
         let column_width = screen_width() / RAY_COUNT as f32;
 
         let x1 = self.pos.x;
@@ -40,11 +42,10 @@ impl Ray {
         let x2 = self.pos.x + self.end.x;
         let y2 = self.pos.y + self.end.y;
 
-        let angle = ((y2 - y1) / (x2 - x1)).atan();
+        let angle = self.degree - player_angle;
+        info!("angle = {}", angle);
 
-        let real_distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt() * angle.cos(); //disable angle.cos()
-        info!("{}", real_distance * angle.cos());
-
+        let real_distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt(); // * angle.to_radians().cos(); //disable angle.cos()
         let distance = (RAY_LENGTH - real_distance) / RAY_LENGTH;
         let column_height = distance * screen_height();
 
@@ -142,8 +143,8 @@ impl Player {
         draw_line(
             self.pos.x,
             self.pos.y,
-            self.pos.x + direction.x * 100.,
-            self.pos.y + direction.y * 100.,
+            self.pos.x + direction.x * 20.,
+            self.pos.y + direction.y * 20.,
             3.0,
             RED,
         );
