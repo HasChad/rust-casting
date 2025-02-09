@@ -42,8 +42,7 @@ impl Ray {
 
         let angle = ((y2 - y1) / (x2 - x1)).atan();
 
-        let real_distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt() * angle.cos();
-
+        let real_distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt() * angle.cos(); //disable angle.cos()
         info!("{}", real_distance * angle.cos());
 
         let distance = (RAY_LENGTH - real_distance) / RAY_LENGTH;

@@ -1,5 +1,5 @@
 [package]
-name = "rust-casting2D"
+name = "rust-casting"
 version = "0.1.0"
 edition = "2021"
 
