@@ -7,7 +7,7 @@ const RAY_LENGTH: f32 = 1000.0;
 pub struct Ray {
     pub degree: f32,
     pub pos: Vec2,
-    pub end: Vec2,
+    pub end: Option<Vec2>,
     pub dir: Vec2,
 }
 
@@ -18,51 +18,67 @@ impl Ray {
         Ray {
             degree,
             pos,
-            end: vec2(direction.x * RAY_LENGTH, direction.y * RAY_LENGTH),
+            end: Some(vec2(direction.x * RAY_LENGTH, direction.y * RAY_LENGTH)),
             dir: direction,
         }
     }
 
     pub fn draw(&self) {
-        draw_line(
-            self.pos.x,
-            self.pos.y,
-            self.pos.x + self.end.x,
-            self.pos.y + self.end.y,
-            1.0,
-            WHITE,
-        );
+        if let Some(end_point) = self.end {
+            draw_line(
+                self.pos.x,
+                self.pos.y,
+                self.pos.x + end_point.x,
+                self.pos.y + end_point.y,
+                1.0,
+                WHITE,
+            );
+        } else {
+            draw_line(
+                self.pos.x,
+                self.pos.y,
+                self.pos.x + self.dir.x * RAY_LENGTH,
+                self.pos.y + self.dir.y * RAY_LENGTH,
+                1.0,
+                WHITE,
+            );
+        }
     }
 
     pub fn draw_column(&self, line_count: usize, player_angle: f32) {
-        // let mut angle = self.degree - player_angle;
-        // info!("angle = {}", angle);
+        if let Some(end_point) = self.end {
+            let mut angle = self.degree - player_angle;
+            // info!("angle = {}", angle);
+            // info!("angle rad = {}", angle.to_radians());
+            // info!("wid = {}", COLUMN_WIDTH);
 
-        let x1 = self.pos.x;
-        let y1 = self.pos.y;
-        let x2 = self.pos.x + self.end.x;
-        let y2 = self.pos.y + self.end.y;
+            let x1 = self.pos.x;
+            let y1 = self.pos.y;
+            let x2 = self.pos.x + end_point.x;
+            let y2 = self.pos.y + end_point.y;
 
-        let real_distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt();
+            let real_distance =
+                ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt() * angle.to_radians().cos();
 
-        let distance = (RAY_LENGTH - real_distance) / RAY_LENGTH;
-        let column_height = distance * screen_height();
+            let distance = (RAY_LENGTH - real_distance) / RAY_LENGTH;
+            let column_height = distance * screen_height();
 
-        if column_height > 0. {
-            let color = Color::from_rgba(
-                (distance * 255.0) as u8,
-                (distance * 255.0) as u8,
-                (distance * 255.0) as u8,
-                255,
-            );
+            if column_height > 0. {
+                let color = Color::from_rgba(
+                    (distance * 255.0) as u8,
+                    (distance * 255.0) as u8,
+                    (distance * 255.0) as u8,
+                    255,
+                );
 
-            draw_rectangle(
-                line_count as f32 * COLUMN_WIDTH,
-                240. - column_height / 2.,
-                COLUMN_WIDTH,
-                column_height,
-                color,
-            );
+                draw_rectangle(
+                    line_count as f32 * COLUMN_WIDTH,
+                    240. - column_height / 2.,
+                    COLUMN_WIDTH,
+                    column_height,
+                    color,
+                );
+            }
         }
     }
 
@@ -109,9 +125,9 @@ impl Ray {
         }
 
         if min_distance != f32::INFINITY {
-            self.end = point - self.pos;
+            self.end = Some(point - self.pos);
         } else {
-            self.end = vec2(self.dir.x * RAY_LENGTH, self.dir.y * RAY_LENGTH);
+            self.end = None;
         }
     }
 }
@@ -139,11 +155,12 @@ impl Player {
             self.degree.to_radians().sin(),
         );
 
+        draw_circle(self.pos.x, self.pos.y, 5.0, RED);
         draw_line(
             self.pos.x,
             self.pos.y,
-            self.pos.x + direction.x * 20.,
-            self.pos.y + direction.y * 20.,
+            self.pos.x + direction.x * 10.,
+            self.pos.y + direction.y * 10.,
             3.0,
             RED,
         );

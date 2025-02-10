@@ -6,7 +6,7 @@ mod inits;
 use app_settings::*;
 use inits::*;
 
-const RAY_COUNT: i32 = 120;
+const RAY_COUNT: i32 = 40;
 const FOV: f32 = 80.0 / RAY_COUNT as f32;
 const COLUMN_WIDTH: f32 = (WIDHT / RAY_COUNT) as f32;
 
