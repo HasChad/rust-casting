@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 
-use crate::RAY_COUNT;
+use crate::COLUMN_WIDTH;
 
 const RAY_LENGTH: f32 = 1000.0;
 
@@ -35,17 +35,16 @@ impl Ray {
     }
 
     pub fn draw_column(&self, line_count: usize, player_angle: f32) {
-        let column_width = screen_width() / RAY_COUNT as f32;
+        // let mut angle = self.degree - player_angle;
+        // info!("angle = {}", angle);
 
         let x1 = self.pos.x;
         let y1 = self.pos.y;
         let x2 = self.pos.x + self.end.x;
         let y2 = self.pos.y + self.end.y;
 
-        let angle = self.degree - player_angle;
-        info!("angle = {}", angle);
-
         let real_distance = ((x1 - x2).powi(2) + (y1 - y2).powi(2)).sqrt();
+
         let distance = (RAY_LENGTH - real_distance) / RAY_LENGTH;
         let column_height = distance * screen_height();
 
@@ -58,9 +57,9 @@ impl Ray {
             );
 
             draw_rectangle(
-                line_count as f32 * column_width,
+                line_count as f32 * COLUMN_WIDTH,
                 240. - column_height / 2.,
-                column_width,
+                COLUMN_WIDTH,
                 column_height,
                 color,
             );
