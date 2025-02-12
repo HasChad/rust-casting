@@ -1,5 +1,5 @@
-# Rust-Casting2D
+# Rust-Casting
 
-Very basic 2D raycasting made with [rust](https://www.rust-lang.org/) using lightweight game library [Macroquad](https://macroquad.rs/).
+Very basic 2.5D FPS ray cast renderer engine made with [rust](https://www.rust-lang.org/) using lightweight game library [Macroquad](https://macroquad.rs/).
 
-![](about/rust-casting2d-preview.gif)
+![](about/rust-casting-preview.gif)

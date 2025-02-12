@@ -47,10 +47,7 @@ impl Ray {
 
     pub fn draw_column(&self, line_count: usize, player_angle: f32) {
         if let Some(end_point) = self.end {
-            let mut angle = self.degree - player_angle;
-            // info!("angle = {}", angle);
-            // info!("angle rad = {}", angle.to_radians());
-            // info!("wid = {}", COLUMN_WIDTH);
+            let angle = self.degree - player_angle;
 
             let x1 = self.pos.x;
             let y1 = self.pos.y;
@@ -174,6 +171,6 @@ pub struct Wall {
 
 impl Wall {
     pub fn draw(&self) {
-        draw_line(self.a.x, self.a.y, self.b.x, self.b.y, 1.0, YELLOW);
+        draw_line(self.a.x, self.a.y, self.b.x, self.b.y, 2.0, YELLOW);
     }
 }
